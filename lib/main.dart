@@ -1,5 +1,6 @@
 import 'package:fax/pages/home.dart';
 import 'package:fax/pages/login.dart';
+import 'package:fax/pages/profil.dart';
 import 'package:fax/pages/register.dart';
 import 'package:fax/pages/splash.dart';
 import 'package:flutter/material.dart';
@@ -26,11 +27,11 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.blue,
+        //primarySwatch: Colors.blue,
         primaryColor: const Color(0xff150F50),
       ),
       debugShowCheckedModeBanner: false,
-      home: const HomePage(),
+      home: const ProfilePage(email: 'email', userName: 'userName'),
     );
   }
 }
