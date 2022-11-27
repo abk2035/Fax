@@ -1,3 +1,4 @@
+import 'package:fax/pages/chat.dart';
 import 'package:fax/pages/profil.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
@@ -10,35 +11,51 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
   String userName = "jhon doe";
   String email = "";
   bool _isLoading = false;
   String groupName = "";
 
+  late TabController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TabController(
+      length: 4,
+      vsync: this,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('FAX'),
+        title: const Text("FAX"),
         backgroundColor: Theme.of(context).primaryColor,
         actions: [
           IconButton(icon: const Icon(Icons.search), onPressed: () {}),
-          PopupMenuButton<String>(onSelected: (value) {
-            print(value);
-          }, itemBuilder: (BuildContext context) {
-            return [
-              const PopupMenuItem(
-                value: 'Profil',
-                child: Text('Profil'),
-              ),
-              const PopupMenuItem(
-                value: 'Profil',
-                child: Text('Profil'),
-              ),
-            ];
-          })
         ],
+        bottom: TabBar(
+          controller: _controller,
+          indicatorColor: Colors.white,
+          tabs: const [
+            Tab(
+              text: "Disc",
+            ),
+            Tab(
+              text: "Groupes",
+            ),
+            Tab(
+              text: "Status",
+            ),
+            Tab(
+              text: "Appels",
+            )
+          ],
+        ),
       ),
       drawer: Drawer(
         child: ListView(
@@ -71,7 +88,7 @@ class _HomePageState extends State<HomePage> {
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
               leading: const Icon(Icons.group),
               title: const Text(
-                "Groups",
+                "nouveau groupe",
                 style: TextStyle(color: Colors.black),
               ),
             ),
@@ -125,6 +142,15 @@ class _HomePageState extends State<HomePage> {
             )
           ],
         ),
+      ),
+      body: TabBarView(
+        controller: _controller,
+        children: const [
+          ChatPage(),
+          Text("GRoupe"),
+          Text("status"),
+          Text("Appel"),
+        ],
       ),
     );
   }
