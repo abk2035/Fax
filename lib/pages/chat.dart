@@ -1,3 +1,4 @@
+import 'package:fax/components/custome_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -20,7 +21,7 @@ class _ChatPageState extends State<ChatPage> {
           color: Theme.of(context).primaryColor,
         ),
       ),
-      body: const Text("chat page"),
+      body:  ListView(children:const [CustomCard(),CustomCard(),],),
     );
   }
 }
