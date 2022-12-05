@@ -1,4 +1,5 @@
 import 'package:fax/pages/chat.dart';
+import 'package:fax/pages/group.dart';
 import 'package:fax/pages/profil.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
@@ -147,7 +148,7 @@ class _HomePageState extends State<HomePage>
         controller: _controller,
         children: const [
           ChatPage(),
-          Text("GRoupe"),
+          GroupPage(),
           Text("status"),
           Text("Appel"),
         ],

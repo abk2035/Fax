@@ -104,7 +104,8 @@ class _IndividualPageState extends State<IndividualPage> {
             child: WillPopScope(
               child: Stack(
                 children: [
-                  Expanded(
+                  Container(
+                    height: MediaQuery.of(context).size.height - 160,
                     child: ListView(
                       shrinkWrap: true,
                       children: const [
