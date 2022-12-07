@@ -3,6 +3,7 @@ import 'package:fax/components/own_message_card.dart';
 import 'package:fax/components/reply_message_card.dart';
 import 'package:flutter/foundation.dart' as foundation;
 import 'package:flutter/material.dart';
+import 'package:socket_io_client/socket_io_client.dart' as io;
 
 class IndividualPage extends StatefulWidget {
   const IndividualPage({Key? key}) : super(key: key);
@@ -15,6 +16,7 @@ class _IndividualPageState extends State<IndividualPage> {
   bool show = false;
   bool sendButton = false;
   FocusNode focusNode = FocusNode();
+  late io.Socket socket;
   // ignore: prefer_final_fields
   TextEditingController _controller = TextEditingController();
 
@@ -22,6 +24,7 @@ class _IndividualPageState extends State<IndividualPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    connect();
 
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
@@ -30,6 +33,18 @@ class _IndividualPageState extends State<IndividualPage> {
         });
       }
     });
+  }
+
+  void connect() {
+    socket = io.io("http://127.0.0.1:5000", <String, dynamic>{
+      "transports": ["websocket"],
+      "autoConnect": false,
+    });
+
+    socket.connect();
+    socket.emit("/test", "hello world");
+    socket.onConnect((data) => print("connected"));
+    print(socket.connected);
   }
 
   @override
