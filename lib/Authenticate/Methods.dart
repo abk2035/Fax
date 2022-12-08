@@ -1,29 +1,29 @@
 import 'package:fax/Authenticate/LoginScree.dart';
-//import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 Future<User?> createAccount(String name, String email, String password) async {
   FirebaseAuth _auth = FirebaseAuth.instance;
-  //FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   try {
     UserCredential userCrendetial = await _auth.createUserWithEmailAndPassword(
-        email: email, password: password);
+        email: email.trim(), password: password.trim());
     if (userCrendetial.user != null) {
       print("Account created Succesfull");
+
+      await _firestore.collection('users').doc(_auth.currentUser!.uid).set({
+        "name": name,
+        "email": email,
+        "status": "Unavalible",
+        "uid": _auth.currentUser!.uid,
+      });
     } else {
       print("failled");
     }
 
     //userCrendetial.user!.updateDisplayName(name);
-
-    // await _firestore.collection('users').doc(_auth.currentUser!.uid).set({
-    //   "name": name,
-    //   "email": email,
-    //   "status": "Unavalible",
-    //   "uid": _auth.currentUser!.uid,
-    // });
 
     return userCrendetial.user;
   } catch (e) {
@@ -38,7 +38,7 @@ Future<User?> logIn(String email, String password) async {
 
   try {
     UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-        email: email, password: password);
+        email: email.trim(), password: password.trim());
 
     if (userCredential.user != null) {
       print("Login Sucessfull");

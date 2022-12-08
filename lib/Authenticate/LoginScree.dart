@@ -112,6 +112,7 @@ class _LoginScreenState extends State<LoginScreen> {
           });
 
           logIn(_email.text, _password.text).then((user) {
+            print(_email.text);
             if (user != null) {
               print("Login Sucessfull");
               setState(() {

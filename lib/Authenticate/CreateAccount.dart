@@ -122,6 +122,7 @@ class _CreateAccountState extends State<CreateAccount> {
           });
 
           createAccount(_name.text, _email.text, _password.text).then((user) {
+            print(user);
             if (user != null) {
               setState(() {
                 isLoading = false;
