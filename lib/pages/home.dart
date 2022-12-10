@@ -1,6 +1,7 @@
 import 'package:fax/pages/chat.dart';
 import 'package:fax/pages/group.dart';
 import 'package:fax/pages/profil.dart';
+import 'package:fax/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -122,7 +123,9 @@ class _HomePageState extends State<HomePage>
                                 color: Colors.red,
                               )),
                           IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              AuthService().logOut(context);
+                            },
                             icon: const Icon(
                               Icons.done,
                               color: Colors.green,

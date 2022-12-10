@@ -1,4 +1,6 @@
-import 'package:fax/pages/register.dart';
+import 'package:fax/pages/Auth/register.dart';
+import 'package:fax/pages/home.dart';
+import 'package:fax/services/auth_service.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
@@ -12,7 +14,10 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  String email = "";
+  String password = "";
   bool _isLoading = false;
+
   final formKey = GlobalKey<FormState>();
 
   @override
@@ -77,15 +82,29 @@ class _LoginPageState extends State<LoginPage> {
                                     style: BorderStyle.none),
                               ),
                             ),
+                            onChanged: (val) {
+                              setState(() {
+                                email = val;
+                              });
+                            },
+                            validator: (val) {
+                              return RegExp(
+                                          r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                      .hasMatch(val!)
+                                  ? null
+                                  : "Please enter a valid email";
+                            },
                           ),
                           const SizedBox(
                             height: 25,
                           ),
                           TextFormField(
+                            obscureText: true,
+                            obscuringCharacter: ".",
                             decoration: InputDecoration(
                               filled: true,
                               fillColor: Colors.white,
-                              hintText: 'Enter your password',
+                              hintText: "Enter your password",
                               prefixIcon: Icon(
                                 Icons.lock,
                                 color: Theme.of(context).primaryColor,
@@ -106,6 +125,18 @@ class _LoginPageState extends State<LoginPage> {
                                     style: BorderStyle.none),
                               ),
                             ),
+                            validator: (val) {
+                              if (val!.length < 6) {
+                                return "Password must be at least 6 characters";
+                              } else {
+                                return null;
+                              }
+                            },
+                            onChanged: (val) {
+                              setState(() {
+                                password = val;
+                              });
+                            },
                           ),
                           const SizedBox(
                             height: 40,
@@ -114,7 +145,40 @@ class _LoginPageState extends State<LoginPage> {
                             width: 320,
                             height: 50,
                             child: OutlinedButton(
-                              onPressed: null,
+                              onPressed: () {
+                                if (formKey.currentState!.validate()) {
+                                  setState(() {
+                                    _isLoading = true;
+                                  });
+                                  AuthService()
+                                      .logIn(email, password)
+                                      .then((user) {
+                                    if (user != null) {
+                                      print("Login Sucessfull");
+                                      setState(() {
+                                        _isLoading = false;
+                                      });
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (builder) =>
+                                                  const HomePage()));
+                                    } else {
+                                      setState(() {
+                                        _isLoading = false;
+                                      });
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                            content: Text(
+                                                "incorrect email or password "),
+                                            duration:
+                                                Duration(milliseconds: 5000)),
+                                      );
+                                    }
+                                  });
+                                }
+                              },
                               style: OutlinedButton.styleFrom(
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(11),
@@ -134,21 +198,20 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           Text.rich(
                             TextSpan(
-                              text: "Don't have an account ?",
+                              text: "Don't have an account ? ",
                               style: const TextStyle(
                                 color: Colors.grey,
                                 fontSize: 14,
                               ),
                               children: <TextSpan>[
                                 TextSpan(
-                                    text: '  Sign up',
+                                    text: 'Sign up',
                                     style: const TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.bold,
                                         color: Colors.white),
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () {
-                                        print('Login Text Clicked');
                                         Navigator.pushReplacement(
                                           context,
                                           MaterialPageRoute(

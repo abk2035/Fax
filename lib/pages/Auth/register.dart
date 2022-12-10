@@ -1,7 +1,6 @@
-import 'package:fax/pages/login.dart';
+import 'package:fax/pages/Auth/login.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -170,7 +169,12 @@ class _RegisterPageState extends State<RegisterPage> {
                                           color: Colors.white),
                                       recognizer: TapGestureRecognizer()
                                         ..onTap = () {
-                                          //nextScreen(context, const LoginPage());
+                                          Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const LoginPage()),
+                                          );
                                         }),
                                 ]),
                           )

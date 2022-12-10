@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "1052607360126",
-    "project_id": "chatapp-3dfbf",
-    "storage_bucket": "chatapp-3dfbf.appspot.com"
+    "project_number": "673805301872",
+    "project_id": "faxapp-7135e",
+    "storage_bucket": "faxapp-7135e.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1052607360126:android:7efba17fa468d0e836bc2f",
+        "mobilesdk_app_id": "1:673805301872:android:6cbcbbc27d8f72b9729cb5",
         "android_client_info": {
-          "package_name": "com.example.chat_app"
+          "package_name": "com.example.fax"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1052607360126-nbisj9p2iud02gt3r3lcfn91nicg4s0l.apps.googleusercontent.com",
+          "client_id": "673805301872-rqfo3vmnqjuiogs9qi7enj2iftuo1g90.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDRV2OfMgAZeyDNfFsOQmicxwBOfEFY1yY"
+          "current_key": "AIzaSyB-DOkyShCkp_EUqaCC_szOV3EIYSXq4AE"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1052607360126-nbisj9p2iud02gt3r3lcfn91nicg4s0l.apps.googleusercontent.com",
+              "client_id": "673805301872-rqfo3vmnqjuiogs9qi7enj2iftuo1g90.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

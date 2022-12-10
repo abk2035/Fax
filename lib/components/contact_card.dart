@@ -49,12 +49,12 @@ class ContactCard extends StatelessWidget {
           fontWeight: FontWeight.bold,
         ),
       ),
-      subtitle: Text(
-       // contact.status,
-        style: const TextStyle(
-          fontSize: 13,
-        ),
-      ),
+      // subtitle: Text(
+      //  contact.status,
+      //   style: const TextStyle(
+      //     fontSize: 13,
+      //   ),
+      // ),
     );
   }
 }

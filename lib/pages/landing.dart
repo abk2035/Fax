@@ -69,8 +69,8 @@ class _landingState extends State<landing> {
                       context,
                       MaterialPageRoute(
                           builder: (builder) => HomePage(
-                                chatmodels: chatmodels,
-                                sourchat: sourceChat,
+                                // chatmodels: chatmodels,
+                                // sourchat: sourceChat,
                               )));
                 },
                 child: ButtonCard(
