@@ -1,4 +1,6 @@
 import 'package:fax/pages/Auth/login.dart';
+import 'package:fax/pages/home.dart';
+import 'package:fax/services/auth_service.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -11,6 +13,9 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  String email = "";
+  String password = "";
+  String fullName = "";
   bool _isLoading = false;
   final formKey = GlobalKey<FormState>();
 
@@ -69,6 +74,18 @@ class _RegisterPageState extends State<RegisterPage> {
                                 borderSide: BorderSide(color: Colors.white),
                               ),
                             ),
+                            onChanged: (val) {
+                              setState(() {
+                                fullName = val;
+                              });
+                            },
+                            validator: (val) {
+                              if (val!.isNotEmpty) {
+                                return null;
+                              } else {
+                                return "Name cannot be empty";
+                              }
+                            },
                           ),
                           const SizedBox(
                             height: 25,
@@ -98,6 +115,20 @@ class _RegisterPageState extends State<RegisterPage> {
                                     style: BorderStyle.none),
                               ),
                             ),
+                            onChanged: (val) {
+                              setState(() {
+                                email = val;
+                              });
+                            },
+
+                            // check tha validation
+                            validator: (val) {
+                              return RegExp(
+                                          r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                      .hasMatch(val!)
+                                  ? null
+                                  : "Please enter a valid email";
+                            },
                           ),
                           const SizedBox(
                             height: 25,
@@ -127,6 +158,18 @@ class _RegisterPageState extends State<RegisterPage> {
                                     style: BorderStyle.none),
                               ),
                             ),
+                            validator: (val) {
+                              if (val!.length < 6) {
+                                return "Password must be at least 6 characters";
+                              } else {
+                                return null;
+                              }
+                            },
+                            onChanged: (val) {
+                              setState(() {
+                                password = val;
+                              });
+                            },
                           ),
                           const SizedBox(
                             height: 40,
@@ -135,7 +178,36 @@ class _RegisterPageState extends State<RegisterPage> {
                             width: 320,
                             height: 50,
                             child: OutlinedButton(
-                              onPressed: null,
+                              onPressed: () {
+                                if (formKey.currentState!.validate()) {
+                                  setState(() {
+                                    _isLoading = true;
+                                  });
+                                }
+                                
+                                AuthService()
+                                    .createAccount(fullName, email, password)
+                                    .then((user) {
+                                  if (user != null) {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (builder) =>
+                                                const HomePage()));
+                                  } else {
+                                    setState(() {
+                                      _isLoading = false;
+                                    });
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content:
+                                              Text(" email is already used "),
+                                          duration:
+                                              Duration(milliseconds: 5000)),
+                                    );
+                                  }
+                                });
+                              },
                               style: OutlinedButton.styleFrom(
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(11),
