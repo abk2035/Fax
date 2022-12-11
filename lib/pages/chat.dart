@@ -29,9 +29,9 @@ class _ChatPageState extends State<ChatPage> {
         ),
       ),
       body: ListView(
-        children: const [
-          CustomCard(),
-          CustomCard(),
+        children:  const [
+          CustomCard(title: "titre",isGroup: false,),
+          CustomCard(title: "groupe",isGroup: true,),
         ],
       ),
     );

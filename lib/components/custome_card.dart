@@ -4,28 +4,31 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
 class CustomCard extends StatelessWidget {
-  const CustomCard({Key? key}) : super(key: key);
+  const CustomCard({Key? key, required this.title, required this.isGroup})
+      : super(key: key);
+  final String title;
+  final bool isGroup;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: (() {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => const IndividualPage()));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const IndividualPage()));
       }),
       child: Column(
         children: [
           ListTile(
             leading: CircleAvatar(
                 backgroundColor: Theme.of(context).primaryColor,
-                child: const Icon(
-                  Icons.groups,
+                child: Icon(
+                  isGroup ? Icons.groups : Icons.person,
                   color: Colors.white,
                   size: 36,
                 )),
-            title: const Text(
-              "Fax group",
-              style: TextStyle(
+            title: Text(
+              title,
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),

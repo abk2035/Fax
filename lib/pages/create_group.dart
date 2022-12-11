@@ -1,43 +1,65 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fax/Models/chat_model.dart';
+import 'package:fax/pages/groups.dart';
+import 'package:fax/pages/home.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:uuid/uuid.dart';
 
-import '../Models/chat_model.dart';
-import '../components/avatar_card.dart';
-import '../components/contact_card.dart';
+class CreateGroup extends StatefulWidget {
+  final List<Map<String, dynamic>> membersList;
 
-class CreateGroupPage extends StatefulWidget {
-  const CreateGroupPage({Key? key}) : super(key: key);
+  const CreateGroup({super.key, required this.membersList});
 
   @override
-  State<CreateGroupPage> createState() => _MyWidgetState();
+  State<CreateGroup> createState() => _CreateGroupState();
 }
 
-class _MyWidgetState extends State<CreateGroupPage> {
-  List<ChatModel> contacts = [
-    ChatModel(name: "Dev Stack", status: "A full stack developer"),
-    ChatModel(name: "Balram", status: "Flutter Developer..........."),
-    ChatModel(name: "Saket", status: "Web developer..."),
-    ChatModel(name: "Bhanu Dev", status: "App developer...."),
-    ChatModel(name: "Collins", status: "Raect developer.."),
-    ChatModel(name: "Kishor", status: "Full Stack Web"),
-    ChatModel(name: "Testing1", status: "Example work"),
-    ChatModel(name: "Testing2", status: "Sharing is caring"),
-    ChatModel(name: "Divyanshu", status: "....."),
-    ChatModel(
-      name: "Helper",
-      status: "Love you Mom Dad",
-    ),
-    ChatModel(name: "Tester", status: "I find the bugs"),
-    ChatModel(name: "Kishor", status: "Full Stack Web"),
-    ChatModel(name: "Testing1", status: "Example work"),
-    ChatModel(name: "Testing2", status: "Sharing is caring"),
-  ];
+class _CreateGroupState extends State<CreateGroup> {
+  bool isLoading = false;
+  final TextEditingController _groupName = TextEditingController();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  List<ChatModel> groupmember = [];
+  void createGroup() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    String groupId = Uuid().v1();
+
+    await _firestore.collection('groups').doc(groupId).set({
+      "members": widget.membersList,
+      "id": groupId,
+    });
+
+    for (int i = 0; i < widget.membersList.length; i++) {
+      String? uid = widget.membersList[i]['uid'];
+
+      await _firestore
+          .collection('users')
+          .doc(uid)
+          .collection('groups')
+          .doc(groupId)
+          .set({
+        "name": _groupName.text,
+        "id": groupId,
+      });
+    }
+
+    await _firestore.collection('groups').doc(groupId).collection('chats').add({
+      "message": "${_auth.currentUser!.displayName} Created This Group.",
+      "type": "notify",
+    });
+
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const HomePage()), (route) => false);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
@@ -53,90 +75,55 @@ class _MyWidgetState extends State<CreateGroupPage> {
               ),
             ),
             Text(
-              "Add participants",
+              "Add subjet",
               style: TextStyle(
                 fontSize: 13,
               ),
             )
           ],
         ),
-        actions: [
-          IconButton(
-              icon: const Icon(
-                Icons.search,
-                size: 26,
-              ),
-              onPressed: () {}),
-        ],
       ),
-      body: Stack(
-        children: [
-          ListView.builder(
-              itemCount: contacts.length,
-              itemBuilder: (context, index) {
-                if (index == 0) {
-                  return Container(
-                    color: Colors.white,
-                    height: groupmember.isNotEmpty ? 90 : 10,
-                  );
-                }
-                return InkWell(
-                  onTap: () {
-                    if (contacts[index].select == false) {
-                      setState(() {
-                        contacts[index].select = true;
-                        groupmember.add(contacts[index]);
-                      });
-                    } else {
-                      setState(() {
-                        groupmember.remove(contacts[index]);
-                        contacts[index].select = false;
-                      });
-                    }
-                  },
-                  child: ContactCard(
-                    contact: contacts[index],
-                  ),
-                );
-              }),
-          groupmember.isNotEmpty
-              ? Align(
-                  alignment: Alignment.topCenter,
-                  child: Column(
-                    children: [
-                      Container(
-                        height: 70,
-                        color: Colors.white,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: contacts.length,
-                          itemBuilder: (context, index) {
-                            if (contacts[index].select == true) {
-                              return InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    groupmember.remove(contacts[index]);
-                                    contacts[index].select = false;
-                                  });
-                                },
-                                child: AvatarCard(
-                                  chatModel: contacts[index],
-                                ),
-                              );
-                            }
-                            return Container();
-                          },
+      body: isLoading
+          ? Container(
+              height: size.height,
+              width: size.width,
+              alignment: Alignment.center,
+              child: CircularProgressIndicator(),
+            )
+          : Column(
+              children: [
+                SizedBox(
+                  height: size.height / 10,
+                ),
+                Container(
+                  height: size.height / 14,
+                  width: size.width,
+                  alignment: Alignment.center,
+                  child: Container(
+                    height: size.height / 14,
+                    width: size.width / 1.15,
+                    child: TextField(
+                      controller: _groupName,
+                      decoration: InputDecoration(
+                        hintText: "Enter Group Name",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      const Divider(
-                        thickness: 1,
-                      ),
-                    ],
+                    ),
                   ),
-                )
-              : Container()
-        ],
-      ),
+                ),
+                SizedBox(
+                  height: size.height / 50,
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).primaryColor),
+                  onPressed: () => createGroup(),
+                  child: const Text("Create Group"),
+                ),
+              ],
+            ),
     );
   }
 }

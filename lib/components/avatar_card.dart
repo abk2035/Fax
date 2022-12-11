@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import '../Models/chat_model.dart';
 
 class AvatarCard extends StatelessWidget {
-  const AvatarCard({Key? key, required this.chatModel}) : super(key: key);
-  final ChatModel chatModel;
+  const AvatarCard({Key? key, required this.name}) : super(key: key);
+  final String name;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +42,7 @@ class AvatarCard extends StatelessWidget {
             height: 2,
           ),
           Text(
-            chatModel.name,
+            name,
             style: const TextStyle(
               fontSize: 12,
             ),

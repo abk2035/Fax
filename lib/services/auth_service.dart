@@ -16,12 +16,12 @@ class AuthService {
 
       print("Account created Succesfull");
 
-      //userCrendetial.user!.updateDisplayName(name);
+      userCrendetial.user!.updateDisplayName(name);
 
       await _firestore.collection('users').doc(_auth.currentUser!.uid).set({
         "name": name.trim(),
         "email": email.trim(),
-        "status": "Unavalible",
+        "status": "Unavalaible",
         "uid": _auth.currentUser!.uid,
       });
 
@@ -39,11 +39,8 @@ class AuthService {
 
       print("Login Sucessfull");
 
-      // _firestore
-      //     .collection('users')
-      //     .doc(_auth.currentUser!.uid)
-      //     .get()
-      //     .then((value) => userCredential.user!.updateDisplayName(value['name']));
+      _firestore.collection('users').doc(_auth.currentUser!.uid).get().then(
+          (value) => userCredential.user!.updateDisplayName(value['name']));
 
       return userCredential.user;
     } on FirebaseAuthException catch (e) {

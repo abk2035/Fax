@@ -1,5 +1,5 @@
 import 'package:fax/components/button_card.dart';
-import 'package:fax/pages/create_group.dart';
+import 'package:fax/pages/add_member_in_group.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -15,18 +15,18 @@ class SelectContactPage extends StatefulWidget {
 }
 
 class _SelectContactPageState extends State<SelectContactPage> {
-  List<ChatModel> contacts = [
-    ChatModel(name: "Dev Stack", status: "A full stack developer"),
-    ChatModel(name: "Balram", status: "Flutter Developer..........."),
-    ChatModel(name: "Saket", status: "Web developer..."),
-    ChatModel(name: "Bhanu Dev", status: "App developer...."),
-    ChatModel(name: "Collins", status: "Raect developer.."),
-    ChatModel(name: "Kishor", status: "Full Stack Web"),
-    ChatModel(name: "Testing1", status: "Example work"),
-    ChatModel(name: "Testing2", status: "Sharing is caring"),
-    ChatModel(name: "Divyanshu", status: "....."),
-    ChatModel(name: "Helper", status: "Love you Mom Dad"),
-    ChatModel(name: "Tester", status: "I find the bugs"),
+  List<UserModel> contacts = [
+    UserModel(name: "Dev Stack", bio: "A full stack developer"),
+    UserModel(name: "Balram", bio: "Flutter Developer..........."),
+    UserModel(name: "Saket", bio: "Web developer..."),
+    UserModel(name: "Bhanu Dev", bio: "App developer...."),
+    UserModel(name: "Collins", bio: "Raect developer.."),
+    UserModel(name: "Kishor", bio: "Full Stack Web"),
+    UserModel(name: "Testing1", bio: "Example work"),
+    UserModel(name: "Testing2", bio: "Sharing is caring"),
+    UserModel(name: "Divyanshu", bio: "....."),
+    UserModel(name: "Helper", bio: "Love you Mom Dad"),
+    UserModel(name: "Tester", bio: "I find the bugs"),
   ];
   @override
   Widget build(BuildContext context) {
@@ -68,9 +68,10 @@ class _SelectContactPageState extends State<SelectContactPage> {
               return InkWell(
                   onTap: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (builder) => const CreateGroupPage()),);
+                      context,
+                      MaterialPageRoute(
+                          builder: (builder) => const CreateGroupPage()),
+                    );
                   },
                   child:
                       const ButtonCard(name: "New Group", icon: Icons.group));
@@ -79,9 +80,9 @@ class _SelectContactPageState extends State<SelectContactPage> {
                   name: "New contact", icon: Icons.person_add);
             }
 
-            return ContactCard(
-              contact: contacts[index - 2],
-            );
+            // return ContactCard(
+            //   contact: contacts[index - 2],
+            // );
           }),
     );
   }

@@ -1,5 +1,5 @@
 import 'package:fax/pages/chat.dart';
-import 'package:fax/pages/group.dart';
+import 'package:fax/pages/groups.dart';
 import 'package:fax/pages/profil.dart';
 import 'package:fax/services/auth_service.dart';
 import 'package:flutter/material.dart';

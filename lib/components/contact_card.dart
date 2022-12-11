@@ -5,7 +5,7 @@ import 'package:flutter/src/widgets/framework.dart';
 
 class ContactCard extends StatelessWidget {
   const ContactCard({Key? key, required this.contact}) : super(key: key);
-  final ChatModel contact;
+  final String contact;
 
   @override
   Widget build(BuildContext context) {
@@ -24,26 +24,26 @@ class ContactCard extends StatelessWidget {
                 size: 30,
               ),
             ),
-            contact.select
-                ? const Positioned(
-                    bottom: 4,
-                    right: 5,
-                    child: CircleAvatar(
-                      backgroundColor: Colors.teal,
-                      radius: 11,
-                      child: Icon(
-                        Icons.check,
-                        color: Colors.white,
-                        size: 18,
-                      ),
-                    ),
-                  )
-                : Container()
+            // contact.select
+            //     ? const Positioned(
+            //         bottom: 4,
+            //         right: 5,
+            //         child: CircleAvatar(
+            //           backgroundColor: Colors.teal,
+            //           radius: 11,
+            //           child: Icon(
+            //             Icons.check,
+            //             color: Colors.white,
+            //             size: 18,
+            //           ),
+            //         ),
+            //       )
+            //     : Container()
           ],
         ),
       ),
       title: Text(
-        contact.name,
+        contact,
         style: const TextStyle(
           fontSize: 15,
           fontWeight: FontWeight.bold,
