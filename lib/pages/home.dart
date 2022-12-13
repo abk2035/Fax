@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fax/pages/chat.dart';
 import 'package:fax/pages/groups.dart';
 import 'package:fax/pages/profil.dart';
 import 'package:fax/services/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -22,13 +24,37 @@ class _HomePageState extends State<HomePage>
 
   late TabController _controller;
 
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  void setStatus(String status) async {
+    await _firestore.collection('users').doc(_auth.currentUser!.uid).update({
+      "status": status,
+    });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // online
+      setStatus("Online");
+    } else {
+      // offline
+      setStatus("Offline");
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+
     _controller = TabController(
       length: 4,
       vsync: this,
     );
+
+    WidgetsBinding.instance!.addObserver(this as WidgetsBindingObserver);
+    setStatus("Online");
   }
 
   @override

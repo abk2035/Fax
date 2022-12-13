@@ -1,12 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:fax/components/own_message_card.dart';
 import 'package:fax/components/reply_message_card.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart' as foundation;
 import 'package:flutter/material.dart';
-import 'package:socket_io_client/socket_io_client.dart' as io;
 
 class IndividualPage extends StatefulWidget {
-  const IndividualPage({Key? key}) : super(key: key);
+  final Map<String, dynamic> userMap;
+  final String chatRoomId;
+
+  const IndividualPage(
+      {Key? key, required this.userMap, required this.chatRoomId})
+      : super(key: key);
 
   @override
   State<IndividualPage> createState() => _IndividualPageState();
@@ -16,15 +22,35 @@ class _IndividualPageState extends State<IndividualPage> {
   bool show = false;
   bool sendButton = false;
   FocusNode focusNode = FocusNode();
-  late io.Socket socket;
   // ignore: prefer_final_fields
   TextEditingController _controller = TextEditingController();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  void onSendMessage() async {
+    if (_controller.text.isNotEmpty) {
+      Map<String, dynamic> messages = {
+        "sendby": _auth.currentUser!.displayName,
+        "message": _controller.text,
+        "type": "text",
+        "time": FieldValue.serverTimestamp(),
+      };
+
+      _controller.clear();
+      await _firestore
+          .collection('chatroom')
+          .doc(widget.chatRoomId)
+          .collection('chats')
+          .add(messages);
+    } else {
+      print("Enter Some Text");
+    }
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    connect();
 
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
@@ -35,20 +61,10 @@ class _IndividualPageState extends State<IndividualPage> {
     });
   }
 
-  void connect() {
-    socket = io.io("http://127.0.0.1:5000", <String, dynamic>{
-      "transports": ["websocket"],
-      "autoConnect": false,
-    });
-
-    socket.connect();
-    socket.emit("/test", "hello world");
-    socket.onConnect((data) => print("connected"));
-    print(socket.connected);
-  }
-
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     return Stack(
       children: [
         Image.asset(
@@ -90,19 +106,32 @@ class _IndividualPageState extends State<IndividualPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children: [
                     Text(
-                      "chatModelname",
-                      style: TextStyle(
+                      widget.userMap['name'],
+                      style: const TextStyle(
                         fontSize: 18.5,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Text(
-                      "last seen today at 12:05",
-                      style: TextStyle(
-                        fontSize: 13,
-                      ),
+                    StreamBuilder<DocumentSnapshot>(
+                      stream: _firestore
+                          .collection("users")
+                          .doc(widget.userMap['uid'])
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.data != null) {
+                          return Text(
+                            snapshot.data!['status'],
+                            style: const TextStyle(
+                              fontSize: 13,
+                            ),
+                          );
+                        } else {
+                          return Container();
+                        }
+                        ;
+                      },
                     )
                   ],
                 ),
@@ -121,29 +150,34 @@ class _IndividualPageState extends State<IndividualPage> {
                 children: [
                   Container(
                     height: MediaQuery.of(context).size.height - 160,
-                    child: ListView(
-                      shrinkWrap: true,
-                      children: const [
-                        OwnMessageCard(),
-                        ReplyMessageCard(),
-                        OwnMessageCard(),
-                        ReplyMessageCard(),
-                        OwnMessageCard(),
-                        ReplyMessageCard(),
-                        OwnMessageCard(),
-                        ReplyMessageCard(),
-                        OwnMessageCard(),
-                        ReplyMessageCard(),
-                        OwnMessageCard(),
-                        ReplyMessageCard(),
-                        OwnMessageCard(),
-                        ReplyMessageCard(),
-                        OwnMessageCard(),
-                        ReplyMessageCard(),
-                        OwnMessageCard(),
-                        ReplyMessageCard()
-                      ],
+                    child: StreamBuilder<QuerySnapshot>(
+                      stream: _firestore
+                          .collection('chatroom')
+                          .doc(widget.chatRoomId)
+                          .collection('chats')
+                          .orderBy("time", descending: false)
+                          .snapshots(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<QuerySnapshot> snapshot) {
+                        if (snapshot.data != null) {
+                          return ListView.builder(
+                            itemCount: snapshot.data!.docs.length,
+                            itemBuilder: (context, index) {
+                              Map<String, dynamic> map =
+                                  snapshot.data!.docs[index].data()
+                                      as Map<String, dynamic>;
+                              return messages(size, map, context);
+                            },
+                          );
+                        } else {
+                          return Container();
+                        }
+                      },
                     ),
+                    //  ListView(
+                    //   shrinkWrap: true,
+                    //   children: [],
+                    // ),
                   ),
                   Align(
                     alignment: Alignment.bottomCenter,
@@ -243,7 +277,7 @@ class _IndividualPageState extends State<IndividualPage> {
                                       sendButton ? Icons.send : Icons.mic,
                                       color: Colors.white,
                                     ),
-                                    onPressed: () {},
+                                    onPressed: onSendMessage,
                                   ),
                                 ),
                               ),
@@ -400,5 +434,13 @@ class _IndividualPageState extends State<IndividualPage> {
         ),
       ),
     );
+  }
+
+  Widget messages(Size size, Map<String, dynamic> map, BuildContext context) {
+    return map['type'] == "text"
+        ? (map['sendby'] == _auth.currentUser!.displayName
+            ? OwnMessageCard(message: map['message'], time: map['time'])
+            : ReplyMessageCard(message: map['message'], time: map['time']))
+        : Container();
   }
 }

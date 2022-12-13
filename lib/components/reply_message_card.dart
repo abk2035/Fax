@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class ReplyMessageCard extends StatelessWidget {
-  const ReplyMessageCard({Key? key}) : super(key: key);
+  const ReplyMessageCard({Key? key, required this.message,required this.time}) : super(key: key);
+  final String message;
+  final String time;
 
   @override
   Widget build(BuildContext context) {
@@ -16,16 +18,16 @@ class ReplyMessageCard extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           child: Stack(
             children: [
-              const Padding(
-                padding: EdgeInsets.only(
+               Padding(
+                padding:const EdgeInsets.only(
                   left: 10,
                   right: 30,
                   top: 5,
                   bottom: 30,
                 ),
                 child: Text(
-                  "my reply message",
-                  style: TextStyle(
+                  message,
+                  style:const TextStyle(
                     fontSize: 16,
                   ),
                 ),
@@ -36,7 +38,7 @@ class ReplyMessageCard extends StatelessWidget {
                 child: Row(
                   children: [
                     Text(
-                      "20:18",
+                      time,
                       style: TextStyle(
                         fontSize: 13,
                         color: Colors.grey[600],
