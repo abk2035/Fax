@@ -5,8 +5,6 @@ import 'package:fax/pages/profil.dart';
 import 'package:fax/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -16,8 +14,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage>
-    with SingleTickerProviderStateMixin {
-  String userName = "jhon doe";
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
+  String userName = "";
   String email = "";
   bool _isLoading = false;
   String groupName = "";
@@ -44,6 +42,19 @@ class _HomePageState extends State<HomePage>
     }
   }
 
+  void getCurrentUser() async {
+    await _firestore
+        .collection('users')
+        .doc(_auth.currentUser!.uid)
+        .get()
+        .then((map) {
+      setState(() {
+        userName = map['name'];
+        email = map['email'];
+      });
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -53,8 +64,10 @@ class _HomePageState extends State<HomePage>
       vsync: this,
     );
 
-    WidgetsBinding.instance!.addObserver(this as WidgetsBindingObserver);
+    WidgetsBinding.instance!.addObserver(this);
     setStatus("Online");
+
+    getCurrentUser();
   }
 
   @override
@@ -121,13 +134,22 @@ class _HomePageState extends State<HomePage>
               ),
             ),
             ListTile(
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            ProfilePage(email: email, userName: userName)));
+              },
               selected: true,
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-              leading: const Icon(Icons.account_circle),
+              leading: Icon(
+                Icons.account_circle,
+                color: Theme.of(context).primaryColor,
+              ),
               title: const Text(
-                "Profile",
+                "Profil",
                 style: TextStyle(color: Colors.black),
               ),
             ),

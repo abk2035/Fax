@@ -1,13 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fax/components/button_card.dart';
 import 'package:fax/pages/add_member_in_group.dart';
+import 'package:fax/pages/individual_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
-import '../Models/chat_model.dart';
 import '../components/contact_card.dart';
 
 class SelectContactPage extends StatefulWidget {
@@ -19,6 +19,7 @@ class SelectContactPage extends StatefulWidget {
 
 class _SelectContactPageState extends State<SelectContactPage> {
   List<Map<String, dynamic>> contacts = [];
+  Map<String, dynamic>? userMap;
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -42,7 +43,7 @@ class _SelectContactPageState extends State<SelectContactPage> {
     return contacts;
   }
 
-    String chatRoomId(String user1, String user2) {
+  String chatRoomId(String user1, String user2) {
     if (user1[0].toLowerCase().codeUnits[0] >
         user2.toLowerCase().codeUnits[0]) {
       return "$user1$user2";
@@ -114,8 +115,26 @@ class _SelectContactPageState extends State<SelectContactPage> {
               return const ButtonCard(
                   name: "New contact", icon: Icons.person_add);
             }
-            return ContactCard(
-              contact: contacts[index - 2]['name'],
+            return InkWell(
+              onTap: () {
+                setState(() {
+                  userMap = contacts[index - 2];
+                });
+                String roomId = chatRoomId(
+                    _auth.currentUser!.displayName!, userMap!['name']);
+
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => IndividualPage(
+                      chatRoomId: roomId,
+                      userMap: userMap!,
+                    ),
+                  ),
+                );
+              },
+              child: ContactCard(
+                contact: contacts[index - 2]['name'],
+              ),
             );
           }),
     );

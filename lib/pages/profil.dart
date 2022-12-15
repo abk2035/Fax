@@ -41,7 +41,9 @@ class _ProfilePageState extends State<ProfilePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text("Full Name", style: TextStyle(fontSize: 17)),
+                Text("Full Name",
+                    style: TextStyle(
+                        fontSize: 17, color: Theme.of(context).primaryColor)),
                 Text(widget.userName, style: const TextStyle(fontSize: 17)),
               ],
             ),
@@ -51,7 +53,9 @@ class _ProfilePageState extends State<ProfilePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text("Email", style: TextStyle(fontSize: 17)),
+                Text("Email",
+                    style: TextStyle(
+                        fontSize: 17, color: Theme.of(context).primaryColor)),
                 Text(widget.email, style: const TextStyle(fontSize: 17)),
               ],
             ),

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
-class ReplyMessageCard extends StatelessWidget {
-  const ReplyMessageCard({Key? key, required this.message, required this.time})
+class ReplyGroupMessageCard extends StatelessWidget {
+  const ReplyGroupMessageCard(
+      {Key? key, required this.message, required this.time, required this.name})
       : super(key: key);
   final String message;
   final String time;
+  final String name;
 
   @override
   Widget build(BuildContext context) {
@@ -15,10 +17,12 @@ class ReplyMessageCard extends StatelessWidget {
           maxWidth: MediaQuery.of(context).size.width - 45,
         ),
         child: Card(
+          color: Theme.of(context).primaryColor,
           elevation: 1,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           child: Stack(
             children: [
+              Positioned(left: 0, bottom: 0, child: Text(name)),
               Padding(
                 padding: const EdgeInsets.only(
                   left: 10,
@@ -30,6 +34,7 @@ class ReplyMessageCard extends StatelessWidget {
                   message,
                   style: const TextStyle(
                     fontSize: 16,
+                    color: Colors.white,
                   ),
                 ),
               ),
@@ -44,6 +49,13 @@ class ReplyMessageCard extends StatelessWidget {
                         fontSize: 13,
                         color: Colors.grey[600],
                       ),
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    const Icon(
+                      Icons.done_all,
+                      size: 20,
                     ),
                   ],
                 ),

@@ -1,10 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fax/pages/add_member_in_group.dart';
+import 'package:fax/pages/group_chat_room.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
-
 import '../components/custome_card.dart';
 
 class GroupPage extends StatefulWidget {
@@ -47,8 +45,10 @@ class _GroupPageState extends State<GroupPage> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).primaryColor,
         onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (builder) => const CreateGroupPage()));
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (builder) => const CreateGroupPage()),
+          );
         },
         tooltip: 'New Group',
         child: const Icon(
@@ -59,8 +59,18 @@ class _GroupPageState extends State<GroupPage> {
       body: ListView.builder(
           itemCount: groupList.length,
           itemBuilder: (context, index) {
-            return InkWell(
-              onTap: () {},
+            return GestureDetector(
+              onTap: () {
+                print("group");
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => GroupChatRoom(
+                      groupName: groupList[index]['name'],
+                      groupChatId: groupList[index]['id'],
+                    ),
+                  ),
+                );
+              },
               child: CustomCard(
                 title: groupList[index]['name'],
                 isGroup: true,

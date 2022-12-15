@@ -1,24 +1,25 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
-import 'package:fax/components/own_message_card.dart';
-import 'package:fax/components/reply_message_card.dart';
+import 'package:fax/pages/group_info.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart' as foundation;
 import 'package:flutter/material.dart';
 
-class IndividualPage extends StatefulWidget {
-  final Map<String, dynamic> userMap;
-  final String chatRoomId;
+import '../components/own_groupmessage_card .dart';
+import '../components/own_message_card.dart';
 
-  const IndividualPage(
-      {Key? key, required this.userMap, required this.chatRoomId})
+class GroupChatRoom extends StatefulWidget {
+  final String groupChatId, groupName;
+
+  const GroupChatRoom(
+      {Key? key, required this.groupChatId, required this.groupName})
       : super(key: key);
 
   @override
-  State<IndividualPage> createState() => _IndividualPageState();
+  State<GroupChatRoom> createState() => _GroupChatRoomState();
 }
 
-class _IndividualPageState extends State<IndividualPage> {
+class _GroupChatRoomState extends State<GroupChatRoom> {
   bool show = false;
   bool sendButton = false;
   FocusNode focusNode = FocusNode();
@@ -29,21 +30,20 @@ class _IndividualPageState extends State<IndividualPage> {
 
   void onSendMessage() async {
     if (_controller.text.isNotEmpty) {
-      Map<String, dynamic> messages = {
-        "sendby": _auth.currentUser!.displayName,
+      Map<String, dynamic> chatData = {
+        "sendBy": _auth.currentUser!.displayName,
         "message": _controller.text,
         "type": "text",
         "time": FieldValue.serverTimestamp(),
       };
 
       _controller.clear();
+
       await _firestore
-          .collection('chatroom')
-          .doc(widget.chatRoomId)
+          .collection('groups')
+          .doc(widget.groupChatId)
           .collection('chats')
-          .add(messages);
-    } else {
-      print("Enter Some Text");
+          .add(chatData);
     }
   }
 
@@ -108,7 +108,7 @@ class _IndividualPageState extends State<IndividualPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.userMap['name'],
+                      widget.groupName,
                       style: const TextStyle(
                         fontSize: 18.5,
                         fontWeight: FontWeight.bold,
@@ -116,13 +116,13 @@ class _IndividualPageState extends State<IndividualPage> {
                     ),
                     StreamBuilder<DocumentSnapshot>(
                       stream: _firestore
-                          .collection("users")
-                          .doc(widget.userMap['uid'])
+                          .collection("groups")
+                          .doc(widget.groupChatId)
                           .snapshots(),
                       builder: (context, snapshot) {
                         if (snapshot.data != null) {
                           return Text(
-                            snapshot.data!['status'],
+                            "${snapshot.data!['members'].length} membres",
                             style: const TextStyle(
                               fontSize: 13,
                             ),
@@ -130,7 +130,6 @@ class _IndividualPageState extends State<IndividualPage> {
                         } else {
                           return Container();
                         }
-                        ;
                       },
                     )
                   ],
@@ -138,6 +137,17 @@ class _IndividualPageState extends State<IndividualPage> {
               ),
             ),
             actions: [
+              IconButton(
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => GroupInfo(
+                      groupName: widget.groupName,
+                      groupId: widget.groupChatId,
+                    ),
+                  ),
+                ),
+                icon: Icon(Icons.more_vert),
+              ),
               IconButton(onPressed: () {}, icon: const Icon(Icons.videocam)),
               IconButton(onPressed: () {}, icon: const Icon(Icons.call))
             ],
@@ -152,21 +162,21 @@ class _IndividualPageState extends State<IndividualPage> {
                     height: MediaQuery.of(context).size.height - 160,
                     child: StreamBuilder<QuerySnapshot>(
                       stream: _firestore
-                          .collection('chatroom')
-                          .doc(widget.chatRoomId)
+                          .collection('groups')
+                          .doc(widget.groupChatId)
                           .collection('chats')
-                          .orderBy("time", descending: false)
+                          .orderBy('time')
                           .snapshots(),
-                      builder: (BuildContext context,
-                          AsyncSnapshot<QuerySnapshot> snapshot) {
-                        if (snapshot.data != null) {
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
                           return ListView.builder(
                             itemCount: snapshot.data!.docs.length,
                             itemBuilder: (context, index) {
-                              Map<String, dynamic> map =
+                              Map<String, dynamic> chatMap =
                                   snapshot.data!.docs[index].data()
                                       as Map<String, dynamic>;
-                              return messages(size, map, context);
+
+                              return messageTile(size, chatMap);
                             },
                           );
                         } else {
@@ -436,39 +446,60 @@ class _IndividualPageState extends State<IndividualPage> {
     );
   }
 
-  Widget messages(Size size, Map<String, dynamic> map, BuildContext context) {
-    String time = map['time'].toString();
-    return map['type'] == "text"
-        ? (map['sendby'] == _auth.currentUser!.displayName
+  Widget messageTile(Size size, Map<String, dynamic> chatMap) {
+    String time = chatMap['time'].toString();
+
+    return Builder(builder: (_) {
+      if (chatMap['type'] == "text") {
+        return chatMap['sendBy'] == _auth.currentUser!.displayName
             ? OwnMessageCard(
-                message: map['message'],
+                message: chatMap['message'],
                 time: time,
               )
-            : ReplyMessageCard(
-                message: map['message'],
-                time: map['time'].toString(),
-              ))
-        : Container();
-  }
-}
-
-
-class ShowImage extends StatelessWidget {
-  final String imageUrl;
-
-  const ShowImage({required this.imageUrl, Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
-
-    return Scaffold(
-      body: Container(
-        height: size.height,
-        width: size.width,
-        color: Colors.black,
-        child: Image.network(imageUrl),
-      ),
-    );
+            : ReplyGroupMessageCard(
+                message: chatMap['message'],
+                time: chatMap['time'].toString(),
+                name: chatMap['sendBy'],
+              );
+      } else if (chatMap['type'] == "img") {
+        return Container(
+          width: size.width,
+          alignment: chatMap['sendBy'] == _auth.currentUser!.displayName
+              ? Alignment.centerRight
+              : Alignment.centerLeft,
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+            margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+            height: size.height / 2,
+            child: Image.network(
+              chatMap['message'],
+            ),
+          ),
+        );
+      } else if (chatMap['type'] == "notify") {
+        return Container(
+          width: size.width,
+          alignment: Alignment.center,
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+            margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5),
+              color: Colors.black38,
+            ),
+            child: Text(
+              chatMap['message'],
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        );
+      } else {
+        return SizedBox();
+      }
+    });
   }
 }
