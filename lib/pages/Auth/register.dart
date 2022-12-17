@@ -50,9 +50,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                 color: Colors.white),
                           ),
                           const SizedBox(
-                            height: 25,
+                            height: 40,
                           ),
-                          Image.asset("assets/logo.png"),
                           TextFormField(
                             decoration: InputDecoration(
                               filled: true,

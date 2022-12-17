@@ -2,10 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fax/pages/create_group.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
-import '../Models/chat_model.dart';
 import '../components/avatar_card.dart';
 import '../components/contact_card.dart';
 

@@ -1,10 +1,15 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:fax/components/own_message_card.dart';
 import 'package:fax/components/reply_message_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart' as foundation;
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:uuid/uuid.dart';
 
 class IndividualPage extends StatefulWidget {
   final Map<String, dynamic> userMap;
@@ -26,6 +31,7 @@ class _IndividualPageState extends State<IndividualPage> {
   TextEditingController _controller = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  File? imageFile;
 
   void onSendMessage() async {
     if (_controller.text.isNotEmpty) {
@@ -44,6 +50,63 @@ class _IndividualPageState extends State<IndividualPage> {
           .add(messages);
     } else {
       print("Enter Some Text");
+    }
+  }
+
+  Future getImage() async {
+    ImagePicker _picker = ImagePicker();
+
+    await _picker.pickImage(source: ImageSource.gallery).then((xFile) {
+      if (xFile != null) {
+        setState(() {
+          imageFile = File(xFile.path);
+        });
+        uploadImage();
+      }
+    });
+  }
+
+  Future uploadImage() async {
+    String fileName = Uuid().v1();
+    int status = 1;
+
+    await _firestore
+        .collection('chatroom')
+        .doc(widget.chatRoomId)
+        .collection('chats')
+        .doc(fileName)
+        .set({
+      "sendby": _auth.currentUser!.displayName,
+      "message": "",
+      "type": "img",
+      "time": FieldValue.serverTimestamp(),
+    });
+
+    var ref =
+        FirebaseStorage.instance.ref().child('images').child("$fileName.jpg");
+
+    var uploadTask = await ref.putFile(imageFile!).catchError((error) async {
+      await _firestore
+          .collection('chatroom')
+          .doc(widget.chatRoomId)
+          .collection('chats')
+          .doc(fileName)
+          .delete();
+
+      status = 0;
+    });
+
+    if (status == 1) {
+      String imageUrl = await uploadTask.ref.getDownloadURL();
+
+      await _firestore
+          .collection('chatroom')
+          .doc(widget.chatRoomId)
+          .collection('chats')
+          .doc(fileName)
+          .update({"message": imageUrl});
+
+      print(" url de l'image  : $imageUrl");
     }
   }
 
@@ -242,7 +305,7 @@ class _IndividualPageState extends State<IndividualPage> {
                                               icon: const Icon(
                                                   Icons.attach_file)),
                                           IconButton(
-                                            onPressed: () {},
+                                            onPressed: () => getImage(),
                                             icon: const Icon(Icons.camera_alt),
                                           )
                                         ],
@@ -448,10 +511,37 @@ class _IndividualPageState extends State<IndividualPage> {
                 message: map['message'],
                 time: map['time'].toString(),
               ))
-        : Container();
+        : Container(
+            height: size.height / 2.5,
+            width: size.width,
+            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+            alignment: map['sendby'] == _auth.currentUser!.displayName
+                ? Alignment.centerRight
+                : Alignment.centerLeft,
+            child: InkWell(
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => ShowImage(
+                    imageUrl: map['message'],
+                  ),
+                ),
+              ),
+              child: Container(
+                height: size.height / 2.5,
+                width: size.width / 2,
+                decoration: BoxDecoration(border: Border.all()),
+                alignment: map['message'] != "" ? null : Alignment.center,
+                child: map['message'] != ""
+                    ? Image.network(
+                        map['message'],
+                        fit: BoxFit.cover,
+                      )
+                    : const CircularProgressIndicator(),
+              ),
+            ),
+          );
   }
 }
-
 
 class ShowImage extends StatelessWidget {
   final String imageUrl;

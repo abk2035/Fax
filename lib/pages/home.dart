@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fax/components/custome_card.dart';
+import 'package:fax/pages/add_member_in_group.dart';
 import 'package:fax/pages/chat.dart';
 import 'package:fax/pages/groups.dart';
 import 'package:fax/pages/profil.dart';
@@ -60,7 +62,7 @@ class _HomePageState extends State<HomePage>
     super.initState();
 
     _controller = TabController(
-      length: 4,
+      length: 3,
       vsync: this,
     );
 
@@ -92,9 +94,6 @@ class _HomePageState extends State<HomePage>
             Tab(
               text: "Status",
             ),
-            Tab(
-              text: "Appels",
-            )
           ],
         ),
       ),
@@ -201,9 +200,10 @@ class _HomePageState extends State<HomePage>
           ChatPage(),
           GroupPage(),
           Text("status"),
-          Text("Appel"),
         ],
       ),
     );
   }
 }
+
+

@@ -47,7 +47,7 @@ class _GroupPageState extends State<GroupPage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (builder) => const CreateGroupPage()),
+            MaterialPageRoute(builder: (context) => const CreateGroupPage()),
           );
         },
         tooltip: 'New Group',
@@ -57,26 +57,26 @@ class _GroupPageState extends State<GroupPage> {
         ),
       ),
       body: ListView.builder(
-          itemCount: groupList.length,
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () {
-                print("group");
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => GroupChatRoom(
-                      groupName: groupList[index]['name'],
-                      groupChatId: groupList[index]['id'],
-                    ),
+        itemCount: groupList.length,
+        itemBuilder: (context, index) {
+          return InkWell(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (builder) => GroupChatRoom(
+                    groupName: groupList[index]['name'],
+                    groupChatId: groupList[index]['id'],
                   ),
-                );
-              },
-              child: CustomCard(
-                title: groupList[index]['name'],
-                isGroup: true,
-              ),
-            );
-          }),
+                ),
+              );
+            },
+            child: CustomCard(
+              title: groupList[index]['name'],
+              isGroup: true,
+            ),
+          );
+        },
+      ),
     );
   }
 }

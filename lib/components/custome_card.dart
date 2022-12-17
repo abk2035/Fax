@@ -11,52 +11,46 @@ class CustomCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: (() {
-        // Navigator.push(context,
-        //     MaterialPageRoute(builder: (context) => const IndividualPage()));
-      }),
-      child: Column(
-        children: [
-          ListTile(
-            leading: CircleAvatar(
-                backgroundColor: Theme.of(context).primaryColor,
-                child: Icon(
-                  isGroup ? Icons.groups : Icons.person,
-                  color: Colors.white,
-                  size: 36,
-                )),
-            title: Text(
-              title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+    return Column(
+      children: [
+        ListTile(
+          leading: CircleAvatar(
+              backgroundColor: Theme.of(context).primaryColor,
+              child: Icon(
+                isGroup ? Icons.groups : Icons.person,
+                color: Colors.white,
+                size: 36,
+              )),
+          title: Text(
+            title,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          trailing: const Text("11:56"),
+          subtitle: Row(
+            children: const [
+              Icon(Icons.done_all),
+              SizedBox(
+                width: 3,
               ),
-            ),
-            trailing: const Text("11:56"),
-            subtitle: Row(
-              children: const [
-                Icon(Icons.done_all),
-                SizedBox(
-                  width: 3,
+              Text(
+                "currentMessage",
+                style: TextStyle(
+                  fontSize: 13,
                 ),
-                Text(
-                  "currentMessage",
-                  style: TextStyle(
-                    fontSize: 13,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-          const Padding(
-            padding: EdgeInsets.only(right: 20, left: 80),
-            child: Divider(
-              thickness: 1,
-            ),
+        ),
+        const Padding(
+          padding: EdgeInsets.only(right: 20, left: 80),
+          child: Divider(
+            thickness: 1,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
