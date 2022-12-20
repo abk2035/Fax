@@ -52,8 +52,10 @@ class AuthService {
   Future logOut(BuildContext context) async {
     try {
       await _auth.signOut().then((value) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (_) => const LoginPage()));
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (_) => const LoginPage()),
+            (route) => false);
       });
     } catch (e) {
       print("error");

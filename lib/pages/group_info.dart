@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fax/pages/add_members.dart';
 import 'package:fax/pages/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -83,7 +84,7 @@ class _GroupInfoState extends State<GroupInfo> {
               return AlertDialog(
                 content: ListTile(
                   onTap: () => removeMembers(index),
-                  title: Text("Remove This Member"),
+                  title: Text("Retirer ce Membre"),
                 ),
               );
             });
@@ -115,7 +116,7 @@ class _GroupInfoState extends State<GroupInfo> {
           .delete();
 
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => HomePage()),
+        MaterialPageRoute(builder: (_) => const HomePage()),
         (route) => false,
       );
     }
@@ -132,7 +133,9 @@ class _GroupInfoState extends State<GroupInfo> {
                 height: size.height,
                 width: size.width,
                 alignment: Alignment.center,
-                child: CircularProgressIndicator(),
+                child: CircularProgressIndicator(
+                  color: Theme.of(context).primaryColor,
+                ),
               )
             : SingleChildScrollView(
                 child: Column(
@@ -140,7 +143,9 @@ class _GroupInfoState extends State<GroupInfo> {
                   children: [
                     Align(
                       alignment: Alignment.centerLeft,
-                      child: BackButton(),
+                      child: BackButton(
+                        color: Theme.of(context).primaryColor,
+                      ),
                     ),
                     Container(
                       height: size.height / 8,
@@ -152,10 +157,10 @@ class _GroupInfoState extends State<GroupInfo> {
                             width: size.height / 11,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: Colors.grey,
+                              color: Theme.of(context).primaryColor,
                             ),
                             child: Icon(
-                              Icons.group,
+                              Icons.groups,
                               color: Colors.white,
                               size: size.width / 10,
                             ),
@@ -204,17 +209,18 @@ class _GroupInfoState extends State<GroupInfo> {
 
                     checkAdmin()
                         ? ListTile(
-                            // onTap: () => Navigator.of(context).push(
-                            //   MaterialPageRoute(
-                            //     builder: (_) => AddMembersINGroup(
-                            //       groupChatId: widget.groupId,
-                            //       name: widget.groupName,
-                            //       membersList: membersList,
-                            //     ),
-                            //   ),
-                            // ),
-                            leading: const Icon(
+                            onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => AddMembersPage(
+                                  groupChatId: widget.groupId,
+                                  name: widget.groupName,
+                                  membersList: membersList,
+                                ),
+                              ),
+                            ),
+                            leading: Icon(
                               Icons.add,
+                              color: Theme.of(context).primaryColor,
                             ),
                             title: Text(
                               "Add Members",
@@ -234,7 +240,10 @@ class _GroupInfoState extends State<GroupInfo> {
                         itemBuilder: (context, index) {
                           return ListTile(
                             onTap: () => showDialogBox(index),
-                            leading: Icon(Icons.account_circle),
+                            leading: Icon(
+                              Icons.account_circle,
+                              color: Theme.of(context).primaryColor,
+                            ),
                             title: Text(
                               membersList[index]['name'],
                               style: TextStyle(
@@ -244,7 +253,10 @@ class _GroupInfoState extends State<GroupInfo> {
                             ),
                             subtitle: Text(membersList[index]['email']),
                             trailing: Text(
-                                membersList[index]['isAdmin'] ? "Admin" : ""),
+                                membersList[index]['isAdmin'] ? "Admin" : "",
+                                style: TextStyle(
+                                  color: Theme.of(context).primaryColor,
+                                )),
                           );
                         },
                       ),
@@ -254,14 +266,14 @@ class _GroupInfoState extends State<GroupInfo> {
                       onTap: onLeaveGroup,
                       leading: Icon(
                         Icons.logout,
-                        color: Colors.redAccent,
+                        color: checkAdmin() ? Colors.grey : Colors.redAccent,
                       ),
                       title: Text(
                         "Leave Group",
                         style: TextStyle(
                           fontSize: size.width / 22,
                           fontWeight: FontWeight.w500,
-                          color: Colors.redAccent,
+                          color: checkAdmin() ? Colors.grey : Colors.redAccent,
                         ),
                       ),
                     ),

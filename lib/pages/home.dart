@@ -56,6 +56,7 @@ class _HomePageState extends State<HomePage>
       });
     });
   }
+  
 
   @override
   void initState() {
@@ -121,7 +122,12 @@ class _HomePageState extends State<HomePage>
               height: 2,
             ),
             ListTile(
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const CreateGroupPage()));
+              },
               selectedColor: Theme.of(context).primaryColor,
               selected: true,
               contentPadding:
@@ -205,5 +211,3 @@ class _HomePageState extends State<HomePage>
     );
   }
 }
-
-

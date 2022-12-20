@@ -90,17 +90,27 @@ class _GroupChatRoomState extends State<GroupChatRoom> {
                     Icons.arrow_back,
                     size: 24,
                   ),
+                  const SizedBox(
+                    width: 18,
+                  ),
                   CircleAvatar(
                     radius: 20,
                     backgroundColor: Colors.white,
-                    child: Icon(Icons.person,
+                    child: Icon(Icons.groups,
                         color: Theme.of(context).primaryColor, size: 24),
                   ),
                 ],
               ),
             ),
             title: InkWell(
-              onTap: () {},
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => GroupInfo(
+                    groupName: widget.groupName,
+                    groupId: widget.groupChatId,
+                  ),
+                ),
+              ),
               child: Container(
                 margin: const EdgeInsets.all(15),
                 child: Column(
@@ -146,10 +156,9 @@ class _GroupChatRoomState extends State<GroupChatRoom> {
                     ),
                   ),
                 ),
-                icon: Icon(Icons.more_vert),
+                tooltip: "infos du groupe",
+                icon: const Icon(Icons.more_vert),
               ),
-              IconButton(onPressed: () {}, icon: const Icon(Icons.videocam)),
-              IconButton(onPressed: () {}, icon: const Icon(Icons.call))
             ],
           ),
           body: Container(
@@ -192,7 +201,7 @@ class _GroupChatRoomState extends State<GroupChatRoom> {
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: Container(
-                      height: 70,
+                      height: 600,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -447,18 +456,19 @@ class _GroupChatRoomState extends State<GroupChatRoom> {
   }
 
   Widget messageTile(Size size, Map<String, dynamic> chatMap) {
-    String time = chatMap['time'].toString();
+    DateTime time = chatMap['time'].toDate();
+    String hour = "${time.hour}:${time.second}";
 
     return Builder(builder: (_) {
       if (chatMap['type'] == "text") {
         return chatMap['sendBy'] == _auth.currentUser!.displayName
             ? OwnMessageCard(
                 message: chatMap['message'],
-                time: time,
+                time: hour,
               )
             : ReplyGroupMessageCard(
                 message: chatMap['message'],
-                time: chatMap['time'].toString(),
+                time: hour,
                 name: chatMap['sendBy'],
               );
       } else if (chatMap['type'] == "img") {

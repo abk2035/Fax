@@ -245,7 +245,7 @@ class _IndividualPageState extends State<IndividualPage> {
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: Container(
-                      height: 70,
+                      height: 600,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -346,7 +346,7 @@ class _IndividualPageState extends State<IndividualPage> {
                               ),
                             ],
                           ),
-                          emojiSelect()
+                          emojiSelect(),
                         ],
                       ),
                     ),
@@ -500,16 +500,17 @@ class _IndividualPageState extends State<IndividualPage> {
   }
 
   Widget messages(Size size, Map<String, dynamic> map, BuildContext context) {
-    String time = map['time'].toString();
+    DateTime time = map['time'].toDate();
+    String hour = "${time.hour}:${time.second}";
     return map['type'] == "text"
         ? (map['sendby'] == _auth.currentUser!.displayName
             ? OwnMessageCard(
                 message: map['message'],
-                time: time,
+                time: hour,
               )
             : ReplyMessageCard(
                 message: map['message'],
-                time: map['time'].toString(),
+                time: hour,
               ))
         : Container(
             height: size.height / 2.5,
